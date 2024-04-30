@@ -11,14 +11,13 @@ class Category(models.Model):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
 class Product(models.Model):
     """ Product in the Category"""
-    category = models.ForeignKey(
-        Category, related_name='products', on_delete=models.PROTECT)
+    category = models.ForeignKey(Category, related_name='products', on_delete=models.PROTECT)
     name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, db_index=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -33,5 +32,5 @@ class Product(models.Model):
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
