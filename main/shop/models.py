@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import  User
 
 class Category(models.Model):
     """ Category of products """
@@ -34,3 +34,27 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class Cart(models.Model):
+    """
+    Model for saving data in cart of user with products
+    """
+
+    user = models.ForeignKey(
+        User, null=True, on_delete=models.CASCADE, verbose_name="Покупатель"
+    )
+    products = models.ManyToManyField(Product, verbose_name="Продукты")
+    
+    @property
+    def products_count(self) -> int:
+        return self.products.count()
+    
+    class Meta:
+        verbose_name = "Корзина"
+        verbose_name_plural = "Корзина"
+
+    def __str__(self) -> str:
+        return f"Корзина {self.user}"
+
+

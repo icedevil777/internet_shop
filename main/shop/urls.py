@@ -11,4 +11,4 @@ urlpatterns = [
     path('api/categories/<int:pk>', CategoryDetailView.as_view(), name="category-detail"),
     path('api/product/<int:pk>', ProductDetailView.as_view(), name="product-detail"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-]  # path('categories/<int:pk>/product/', CategoryProduct.as_view()),
+]  

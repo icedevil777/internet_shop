@@ -40,18 +40,3 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializer
 
 
-# class SnippetHighlight(generics.GenericAPIView):
-#     queryset = Snippet.objects.all()
-#     renderer_classes = [renderers.StaticHTMLRenderer]
-
-#     def get(self, request, *args, **kwargs):
-#         snippet = self.get_object()
-#         return Response(snippet.highlighted)
-
-# class CategoryProduct(generics.GenericAPIView):
-#     queryset = Product.objects.all()
-#     # renderer_classes = [renderers.StaticHTMLRenderer]
-
-#     def get(self, request, *args, **kwargs):
-#         product = self.get_object()
-#         return Response(product.category)
