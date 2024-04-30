@@ -41,9 +41,7 @@ class Cart(models.Model):
     Model for saving data in cart of user with products
     """
 
-    user = models.ForeignKey(
-        User, null=True, on_delete=models.CASCADE, verbose_name="Покупатель"
-    )
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE, verbose_name="Покупатель")
     products = models.ManyToManyField(Product, verbose_name="Продукты")
     
     @property
@@ -52,9 +50,34 @@ class Cart(models.Model):
     
     class Meta:
         verbose_name = "Корзина"
-        verbose_name_plural = "Корзина"
+        verbose_name_plural = "Корзины"
 
     def __str__(self) -> str:
         return f"Корзина {self.user}"
 
 
+
+# class Order(models.Model):
+#     """
+#     Model for saving data  about orders
+#     """
+
+#     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, verbose_name="Покупатель")
+    
+#     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Покупатель")
+#     data_created = models.DateTimeField(
+#         auto_now_add=True, verbose_name="Дата оформления заказа"
+#     )
+    
+#     products = models.ManyToManyField(Product, verbose_name="Продукты")
+    
+#     @property
+#     def products_count(self) -> int:
+#         return self.products.count()
+    
+#     class Meta:
+#         verbose_name = "Заказ"
+#         verbose_name_plural = "Заказы"
+
+#     def __str__(self) -> str:
+#         return f"Заказ {self.user}"
