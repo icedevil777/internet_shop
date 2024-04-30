@@ -2,13 +2,6 @@ from django.db import models
 
 
 class Category(models.Model):
-
-    name = models.CharField('Название категории', max_length=250)
-    alias = models.CharField('Алиас', max_length=200, db_index=True)
-    slug = models.SlugField(max_length=50, unique=True)
-
-
-class Category(models.Model):
     """ Category of products """
     name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, db_index=True, unique=True)
@@ -23,7 +16,9 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.PROTECT)
+    """ Product in the Category"""
+    category = models.ForeignKey(
+        Category, related_name='products', on_delete=models.PROTECT)
     name = models.CharField(max_length=200, db_index=True)
     slug = models.SlugField(max_length=200, db_index=True)
     description = models.TextField(blank=True)
