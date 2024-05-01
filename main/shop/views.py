@@ -29,7 +29,7 @@ class ProductListView(generics.ListAPIView):
 
 class ProductDetailView(generics.RetrieveAPIView):
     """
-    API endpoint that allows products to be viewed 
+    API endpoint that allows product to be viewed 
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -37,7 +37,7 @@ class ProductDetailView(generics.RetrieveAPIView):
 
 class CategoryDetailView(generics.RetrieveAPIView):
     """
-    API endpoint that allows categories to be viewed
+    API endpoint that allows category to be viewed
     """
     queryset =  Category.objects.all()
     serializer_class = CategorySerializer
