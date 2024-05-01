@@ -1,70 +1,43 @@
-from urllib import response
-from django.http import JsonResponse
-from django.shortcuts import render
-from rest_framework import permissions, viewsets, generics
-from rest_framework import renderers
+from unicodedata import category
+from rest_framework import generics
 from .models import Category, Product
-from .serializers import ProductSerializer, CategorySerializer
 from rest_framework.response import Response
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.parsers import JSONParser
-from rest_framework.decorators import api_view
-from rest_framework import status
+from .serializers import ProductSerializer, CategorySerializer, ProductPostSerializer
 
 
-# ___________________ api/v2 _________________________
+class ProductListView(generics.ListAPIView):
+    """
+    API endpoint that allows list of products to be viewed 
+    """
+    queryset = Product.objects.all()
+    filterset_fields = ['category', 'available']
+    
+    def post(self, request):
+        """POST /products"""
+        print(request.data)
+        if request.data['category']:
+            cat = Category.objects.get(name=request.data['category'])
+            serializer = ProductSerializer(Product.objects.filter(category=cat.id), many=True)
+            return Response(serializer.data, status=200)
+        return Response(status=400)
+        
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            return ProductPostSerializer
+        return ProductSerializer
 
 
-class ProductList(generics.ListCreateAPIView):
+class ProductDetailView(generics.RetrieveAPIView):
+    """
+    API endpoint that allows products to be viewed 
+    """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def post(self, request, *args, **kwargs) -> Response:
-        print("gjcn")
-        return Response
 
-
-class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-
-# ___________________ /api/v1 _________________________
-
-
-class ProductViewSet(viewsets.ModelViewSet):
+class CategoryDetailView(generics.RetrieveAPIView):
     """
-    API endpoint that allows products to be viewed or edited.
+    API endpoint that allows categories to be viewed
     """
-
-    queryset = Product.objects.all().order_by("id")
-    serializer_class = ProductSerializer
-    # permission_classes = [permissions.AllowAny]
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows categories to be viewed or edited.
-    """
-
-    queryset = Category.objects.all().order_by("id")
-    serializer_class = CategorySerializer
-    # permission_classes = [permissions.AllowAny]
-
-
-class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    API endpoint that allows categories to be viewed or edited.
-    """
-
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-
-class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    API endpoint that allows categories to be viewed or edited.
-    """
-
-    queryset = Product.objects.all()
+    queryset =  Category.objects.all()
     serializer_class = CategorySerializer
