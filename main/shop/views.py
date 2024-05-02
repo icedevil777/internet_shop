@@ -1,5 +1,5 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics
-
 from .filters import MyFilter
 from .models import Category, Product
 from rest_framework.response import Response
@@ -21,10 +21,13 @@ class ProductListView(generics.ListAPIView):
     def post(self, request):
         """POST /products"""
         if request.data['category']:
-            cat = Category.objects.get(name=request.data['category'])
-            serializer = ProductSerializer(Product.objects.filter(category=cat.id),
-                                           many=True, context={'request': request})
-            return Response(serializer.data, status=200)
+            try:
+                cat = Category.objects.get(name=request.data['category'])
+                serializer = ProductSerializer(Product.objects.filter(category=cat.id),
+                                            many=True, context={'request': request})
+                return Response(serializer.data, status=200)
+            except ObjectDoesNotExist:
+                return Response(status=404)
         return Response(status=400)
         
     def get_serializer_class(self):
