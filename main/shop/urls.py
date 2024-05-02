@@ -1,6 +1,6 @@
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from .views import ProductDetailView, ProductListView, CategoryDetailView
+from .views import ProductDetailView, ProductListView, CategoryDetailView, CategoryListView
 
 
 urlpatterns = [
@@ -11,6 +11,7 @@ urlpatterns = [
     path("api/product/<int:pk>", ProductDetailView.as_view(), name="product-detail"),
     path("api/category/<int:pk>", CategoryDetailView.as_view(), name="category-detail"),
     path("api/products/", ProductListView.as_view(), name="product_list"),
+    path("api/categories/", CategoryListView.as_view(), name="category_list"),
 ]
 
 

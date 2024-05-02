@@ -7,7 +7,7 @@ from .serializers import ProductSerializer, CategorySerializer, ProductPostSeria
 from rest_framework.filters import  OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-
+  
 class ProductListView(generics.ListAPIView):
     """
     API endpoint that allows list of products to be viewed 
@@ -20,7 +20,6 @@ class ProductListView(generics.ListAPIView):
     
     def post(self, request):
         """POST /products"""
-        print(request.data)
         if request.data['category']:
             cat = Category.objects.get(name=request.data['category'])
             serializer = ProductSerializer(Product.objects.filter(category=cat.id),
@@ -40,6 +39,14 @@ class ProductDetailView(generics.RetrieveAPIView):
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+class CategoryListView(generics.ListAPIView):
+    """
+    API endpoint that allows list of categories with products to be viewed 
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
