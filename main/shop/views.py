@@ -5,7 +5,7 @@ from .cart import Cart
 from .filters import MyFilter
 from .models import Category, Product
 from rest_framework.response import Response
-from .serializers import ProductSerializer, CategorySerializer, ProductPostSerializer, СartAddSerializer
+from .serializers import ProductSerializer, CategorySerializer, ProductPostSerializer, СartAddSerializer, СartDelSerializer
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
@@ -36,6 +36,14 @@ class СartAddView(APIView):
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # def delete(self, request):
+    #     cart = Cart(request)
+    #     serializer = СartDelSerializer(data=request.data)
+    #     if serializer.is_valid():
+    #         cart.remove(serializer.data["id"])
+    #         return Response(serializer.data, status=status.HTTP_200_OK)
+    #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductListView(generics.ListAPIView):

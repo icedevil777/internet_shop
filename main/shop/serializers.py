@@ -4,6 +4,10 @@ from rest_framework import serializers
 from .models import Product, Category
 
 
+class СartDelSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
 class СartAddSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     quantity = serializers.IntegerField()

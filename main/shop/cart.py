@@ -30,6 +30,14 @@ class Cart:
 
     def remove(self, product):
         """ Delete product from cart """
+        product_id = str(product.id)
+        if product_id in self.cart:
+            del self.cart[product_id]
+            self.save()
+
+    def clear(self):
+        del self.session[settings.CART_SESSION_ID]
+        self.save()
 
     def __iter__(self):
         """Get products from db"""
