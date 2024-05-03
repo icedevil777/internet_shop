@@ -8,7 +8,6 @@ class Cart:
     def __init__(self, request):
         """ Init cart """
         self.session = request.session
-        print('self.session', self.session)
         cart = self.session.get(settings.CART_SESSION_ID)
         if not cart:
             cart = self.session[settings.CART_SESSION_ID] = {}
