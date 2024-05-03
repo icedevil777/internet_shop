@@ -5,6 +5,8 @@ from .models import Product, Category
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer for  Product"""
+    category = serializers.SlugRelatedField(many=False, read_only=True, slug_field="slug")
+
     class Meta:
         model = Product
         fields = "__all__"
@@ -12,7 +14,8 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     """Serializer for Category"""
-    products = serializers.HyperlinkedIdentityField(many=True, read_only=True, view_name="product-detail")
+    # products = serializers.HyperlinkedIdentityField(many=True, read_only=True, view_name="product-detail")
+    products = serializers.SlugRelatedField(many=True, read_only=True, slug_field="slug")
 
     class Meta:
         model = Category
@@ -21,7 +24,6 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 class ProductPostSerializer(serializers.Serializer):
     """Serializer for  Product if you want use POST method """
-    categories = Category.objects.all()   
+    categories = Category.objects.all()
     id = serializers.IntegerField(read_only=True)
     category = serializers.ChoiceField(choices=[cat.name for cat in categories])
-
