@@ -57,14 +57,17 @@ class СartDetailView(APIView):
         """Update on detail page"""
         cart = Cart(request)
         product: Product = self.get_object(pk)
-        serializer = СartDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            cart.add(
-                product=product,
-                quantity=serializer.data['quantity'],
-                override_quantity=True
-            )
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        if not product:
+            raise Http404
+        else:
+            serializer = СartDetailSerializer(data=request.data)
+            if serializer.is_valid():
+                cart.add(
+                    product=product,
+                    quantity=serializer.data['quantity'],
+                    override_quantity=True
+                )
+                return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -78,7 +81,8 @@ class СartView(APIView):
     def get(self, request) -> Response:
         """ Get all products from cart"""
         cart = Cart(request)
-        return Response(cart.cart, status=status.HTTP_200_OK)
+        price = cart.get_total_price()
+        return Response({"price": price, "products": cart.cart}, status=status.HTTP_200_OK)
 
     def post(self, request) -> Response:
         """Add and Update on list page"""

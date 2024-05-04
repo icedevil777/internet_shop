@@ -1,10 +1,11 @@
 from decimal import Decimal
+from typing import Literal
 from django.conf import settings
 from shop.models import Product
 
 
 class Cart:
-    def __init__(self, request):
+    def __init__(self, request) -> None:
         """ Init cart """
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
@@ -23,11 +24,11 @@ class Cart:
             self.cart[product_id]['quantity'] += quantity
         self.save()
 
-    def save(self):
+    def save(self) -> None:
         """Save cart in session"""
         self.session.modified = True
 
-    def remove(self, product):
+    def remove(self, product) -> None | Literal[True]:
         """ Delete one product from cart """
         product_id = str(product.id)
         if product_id in self.cart:
@@ -35,13 +36,14 @@ class Cart:
             self.save()
             return True
 
-    def clear(self):
+    def clear(self) -> None:
         """ Delete all products from cart """
         del self.session[settings.CART_SESSION_ID]
         self.save()
 
     def __iter__(self):
         """Get products from db"""
+        print("this is iter method")
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
         cart = self.cart.copy()
@@ -52,10 +54,10 @@ class Cart:
             item['total_price'] = item['price'] * item['quantity']
             yield item
 
-    def __len__(self):
+    def __len__(self) -> int:
         """Count all products in cart"""
         return sum(item['quantity'] for item in self.cart.values())
 
-    def get_total_price(self):
+    def get_total_price(self) -> int:
         """Calc products price in cart"""
         return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
