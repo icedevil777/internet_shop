@@ -6,6 +6,7 @@ __pycache__/
 .vscode/
 .venv/
 .isort.cfg
+.pylintrc
 .mypy.ini
 # C extensions
 *.so
