@@ -36,6 +36,7 @@ class СartDetailView(APIView):
             raise Http404
 
     def get(self, request, pk) -> Response:
+        """ Get one product from cart"""
         cart = Cart(request)
         product: Product = self.get_object(pk)
         try:
@@ -53,6 +54,7 @@ class СartDetailView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk) -> Response:
+        """Update on detail page"""
         cart = Cart(request)
         product: Product = self.get_object(pk)
         serializer = СartDetailSerializer(data=request.data)
@@ -74,10 +76,12 @@ class СartView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request) -> Response:
+        """ Get all products from cart"""
         cart = Cart(request)
         return Response(cart.cart, status=status.HTTP_200_OK)
 
     def post(self, request) -> Response:
+        """Add and Update on list page"""
         cart = Cart(request)
         product: Product = get_object_or_404(Product, id=request.data['id'])
         serializer = self.serializer_class(data=request.data)
