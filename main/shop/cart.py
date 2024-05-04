@@ -4,7 +4,6 @@ from shop.models import Product
 
 
 class Cart:
-
     def __init__(self, request):
         """ Init cart """
         self.session = request.session
@@ -17,7 +16,7 @@ class Cart:
         """Add or update product in cart"""
         product_id = str(product.id)
         if product_id not in self.cart:
-            self.cart[product_id] = {'quantity': 0, 'price': str(product.price)}
+            self.cart[product_id] = {'slug': product.slug, 'quantity': 0, 'price': str(product.price)}
         if override_quantity:
             self.cart[product_id]['quantity'] = quantity
         else:
@@ -29,13 +28,15 @@ class Cart:
         self.session.modified = True
 
     def remove(self, product):
-        """ Delete product from cart """
+        """ Delete one product from cart """
         product_id = str(product.id)
         if product_id in self.cart:
             del self.cart[product_id]
             self.save()
+            return True
 
     def clear(self):
+        """ Delete all products from cart """
         del self.session[settings.CART_SESSION_ID]
         self.save()
 

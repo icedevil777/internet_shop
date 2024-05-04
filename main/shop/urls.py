@@ -1,7 +1,17 @@
 from django.urls import include, path
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from .views import ProductDetailView, ProductListView, CategoryDetailView, CategoryListView, СartAddView
-
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView
+)
+from .views import (
+    ProductDetailView,
+    ProductListView,
+    CategoryDetailView,
+    CategoryListView,
+    СartView,
+    СartDetailView
+)
 
 urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -12,5 +22,6 @@ urlpatterns = [
     path("api/category/<int:pk>", CategoryDetailView.as_view(), name="category-detail"),
     path("api/products/", ProductListView.as_view(), name="product_list"),
     path("api/categories/", CategoryListView.as_view(), name="category_list"),
-    path("api/cart/add/", СartAddView.as_view(), name="add_cart"),
+    path("api/cart/", СartView.as_view(), name="cart"),
+    path("api/cart/<int:pk>", СartDetailView.as_view(), name="detail_cart"),
 ]

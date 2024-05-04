@@ -1,30 +1,83 @@
+from itertools import product
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import get_serializer
+from django.http import Http404
 from rest_framework import generics
 from .cart import Cart
 from .filters import MyFilter
 from .models import Category, Product
 from rest_framework.response import Response
-from .serializers import ProductSerializer, CategorySerializer, ProductPostSerializer, СartAddSerializer, СartDelSerializer
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.views import APIView
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
+from .serializers import (
+    ProductSerializer,
+    CategorySerializer,
+    ProductPostSerializer,
+    СartSerializer,
+    СartDetailSerializer
+)
 
 
-class СartAddView(APIView):
-    """API endpoint for adding and listing products in cart """
-    serializer_class = СartAddSerializer
+class СartDetailView(APIView):
+    """
+    API endpoint for delete and update products in cart
+    """
+    serializer_class = СartDetailSerializer
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get_object(self, pk) -> Product:
+        try:
+            return Product.objects.get(pk=pk)
+        except Product.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk) -> Response:
         cart = Cart(request)
-        print(cart.cart)
+        product: Product = self.get_object(pk)
+        try:
+            product = cart.cart[str(pk)]
+            return Response(product, status=status.HTTP_200_OK)
+        except KeyError:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def delete(self, request, pk) -> Response:
+        """ Delete one product from cart"""
+        cart = Cart(request)
+        product: Product = self.get_object(pk)
+        if cart.remove(product):
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk) -> Response:
+        cart = Cart(request)
+        product: Product = self.get_object(pk)
+        serializer = СartDetailSerializer(data=request.data)
+        if serializer.is_valid():
+            cart.add(
+                product=product,
+                quantity=serializer.data['quantity'],
+                override_quantity=True
+            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class СartView(APIView):
+    """
+    API endpoint for add and list products in cart
+    """
+    serializer_class = СartSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request) -> Response:
+        cart = Cart(request)
         return Response(cart.cart, status=status.HTTP_200_OK)
 
-    def post(self, request):
+    def post(self, request) -> Response:
         cart = Cart(request)
         product: Product = get_object_or_404(Product, id=request.data['id'])
         serializer = self.serializer_class(data=request.data)
@@ -37,13 +90,11 @@ class СartAddView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    # def delete(self, request):
-    #     cart = Cart(request)
-    #     serializer = СartDelSerializer(data=request.data)
-    #     if serializer.is_valid():
-    #         cart.remove(serializer.data["id"])
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-    #     return Response(status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request) -> Response:
+        """ Delete all products from cart"""
+        cart = Cart(request)
+        cart.clear()
+        return Response(status=status.HTTP_200_OK)
 
 
 class ProductListView(generics.ListAPIView):
@@ -52,16 +103,16 @@ class ProductListView(generics.ListAPIView):
     """
     serializer_class = ProductPostSerializer
     queryset = Product.objects.all()
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ['category', 'available']
-    ordering_fields = ['id', 'price']
+    filter_backends: list = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields: list[str] = ['category', 'available']
+    ordering_fields: list[str] = ['id', 'price']
     filterset_class = MyFilter
 
-    def post(self, request):
+    def post(self, request) -> Response:
         """POST /products"""
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            category = Category.objects.get(name=serializer.data["category"])
+            category: Category = Category.objects.get(name=serializer.data["category"])
             products = Product.objects.filter(category=category.id)
             serializer = ProductSerializer(products, many=True, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)

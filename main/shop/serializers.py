@@ -1,24 +1,17 @@
 from django.template.defaultfilters import default
 from rest_framework import serializers
-
 from .models import Product, Category
 
 
-class СartDelSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-
-
-class СartAddSerializer(serializers.Serializer):
+class СartSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     quantity = serializers.IntegerField()
     override = serializers.BooleanField(default=False)
 
-    # def create(self, validated_data):
-    #     """
-    #     Create and return a new `Snippet` instance, given the validated data.
-    #     """
-    #     print('validated_data', validated_data)
-    #     return validated_data
+
+class СartDetailSerializer(serializers.Serializer):
+    quantity = serializers.IntegerField()
+    override = serializers.BooleanField(default=True)
 
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
