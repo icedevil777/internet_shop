@@ -10,7 +10,9 @@ from .views import (
     CategoryDetailView,
     CategoryListView,
     СartView,
-    СartDetailView
+    СartDetailView,
+    OrderCreateView,
+    OrderDetailView
 )
 
 urlpatterns = [
@@ -24,4 +26,6 @@ urlpatterns = [
     path("api/categories/", CategoryListView.as_view(), name="category_list"),
     path("api/cart/", СartView.as_view(), name="cart"),
     path("api/cart/<int:pk>", СartDetailView.as_view(), name="detail_cart"),
+    path('api/cart/order/', OrderCreateView.as_view(), name='create_order'),
+    path('api/cart/order/<int:pk>', OrderDetailView.as_view(), name='detail_order'),
 ]

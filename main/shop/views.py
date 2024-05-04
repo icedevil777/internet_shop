@@ -1,11 +1,9 @@
-from itertools import product
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.serializers import get_serializer
+import copy
 from django.http import Http404
 from rest_framework import generics
 from .cart import Cart
 from .filters import MyFilter
-from .models import Category, Product
+from .models import Category, Order, Product, OrderItem
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -18,8 +16,43 @@ from .serializers import (
     CategorySerializer,
     ProductPostSerializer,
     СartSerializer,
-    СartDetailSerializer
+    СartDetailSerializer,
+    OrderSerializer
 )
+
+
+class OrderDetailView(generics.RetrieveAPIView):
+    """
+    API endpoint that allows category to be viewed
+    """
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+
+
+class OrderCreateView(APIView):
+    """
+    API endpoint for delete and update products in cart
+    """
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request) -> Response:
+        cart = Cart(request)
+        items = copy.deepcopy(cart.cart)
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            order = serializer.save()
+            # bulk_create
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    price=item['price'],
+                    quantity=item['quantity']
+                )
+            cart.clear()
+            return Response({"products_in_order": items, "order": serializer.validated_data}, status=status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class СartDetailView(APIView):
@@ -67,7 +100,7 @@ class СartDetailView(APIView):
                     quantity=serializer.data['quantity'],
                     override_quantity=True
                 )
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response(serializer.validated_data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -95,7 +128,7 @@ class СartView(APIView):
                 quantity=serializer.data['quantity'],
                 override_quantity=serializer.data['override']
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request) -> Response:

@@ -1,6 +1,23 @@
 from django.template.defaultfilters import default
 from rest_framework import serializers
-from .models import Product, Category
+from .models import Order, OrderItem, Product, Category
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields: str = "__all__"
+
+    def create(self, validated_data) -> Order:
+        return Order.objects.create(**validated_data)
 
 
 class СartSerializer(serializers.Serializer):
@@ -20,7 +37,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Product
-        fields = "__all__"
+        fields: str = "__all__"
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
@@ -30,7 +47,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Category
-        fields = "__all__"
+        fields: str = "__all__"
 
 
 class ProductPostSerializer(serializers.Serializer):
