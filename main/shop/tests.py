@@ -1,11 +1,10 @@
 from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework import status
 from rest_framework.test import APITestCase
 from .serializers import CategorySerializer
 from .models import Product, Category
-from django.urls import include, path, reverse
+from django.urls import reverse
 
 
 class ProductTestCase(APITestCase):
@@ -22,32 +21,28 @@ class ProductTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Category.objects.count(), 0)
 
-    # def test_create_category(self) -> None:
-    #     url: str = reverse('category_list')
-    #     data: dict[str, str] = {"name": "Fruits", "slug": "fruits"}
-    #     response: HttpResponse = self.client.post(url, data, format='json')
-    #     self.assertEqual(response.status_code, 201)
-    #     self.assertEqual(Category.objects.count(), 1)
+    def test_create_check_category(self) -> None:
+        url: str = reverse('category-list')
+        data: dict[str, str] = {"name": "Fruits", "slug": "fruits"}
+        response: HttpResponse = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Category.objects.count(), 1)
+        response: HttpResponse = self.client.get('/api/category/1', format='json')
+        self.assertEqual(response.status_code, 200)
+        response: HttpResponse = self.client.get('/api/category/2', format='json')
+        self.assertEqual(response.status_code, 404)
 
-    # def test_wrong_create_category(self) -> None:
-    #     url: str = reverse('category_list')
-    #     data: dict[str, str] = {"slug": "slug"}
-    #     response: HttpResponse = self.client.post(url, data, format='json')
-    #     print(response.status_code)
-    #     self.assertEqual(response.status_code, 400)
+    def test_create_check_product(self) -> None:
 
-    # def test_category_detail(self) -> None:
-    #     response: HttpResponse = self.client.get('/api/category/1', format='json')
-    #     print(response.data)
-        # self.assertEqual(response.status_code, 200)
-
-    # def test_create_product(self) -> None:
-    #     url: str = reverse('product_create')
-    #     data: dict[str, str] = {"name": "Mango", "slug": "mango", "price": 100, "Available": True, "category": 0}
-    #     response: HttpResponse = self.client.post(url, data, format='json')
-    #     print(response.data, 'response.data')
-        # self.assertEqual(response.status_code, 400)
-        # self.assertEqual(Category.objects.count(), 1)
+        cat_1 = Category.objects.create(name='Fruits', slug='fruits')
+        url: str = reverse('product-create')
+        data: dict[str, str] = {
+            "name": "Mango", "slug": "mango", "price": "10.00",
+            "Available": True, "category": cat_1.id
+        }
+        response: HttpResponse = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Category.objects.count(), 1)
 
 
 class CategorySerializerTestCase(TestCase):
