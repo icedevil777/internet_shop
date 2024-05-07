@@ -31,13 +31,17 @@ class СartDetailSerializer(serializers.Serializer):
     override = serializers.BooleanField(default=True)
 
 
-class ProductSerializer(serializers.HyperlinkedModelSerializer):
+class CreateProductSerializer(serializers.ModelSerializer):
     """Serializer for  Product"""
-    category = serializers.SlugRelatedField(many=False, read_only=True, slug_field="slug")
+    # category = serializers.SlugRelatedField(many=False, read_only=True, slug_field="slug")
 
     class Meta:
         model = Product
         fields: str = "__all__"
+
+
+class ProductSerializer(CreateProductSerializer):
+    category = serializers.SlugRelatedField(many=False, read_only=True, slug_field="slug")
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):

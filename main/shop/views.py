@@ -17,7 +17,8 @@ from .serializers import (
     ProductPostSerializer,
     СartSerializer,
     СartDetailSerializer,
-    OrderSerializer
+    OrderSerializer,
+    CreateProductSerializer
 )
 
 
@@ -173,7 +174,7 @@ class ProductDetailView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
 
 
-class CategoryListView(generics.ListAPIView):
+class CategoryListCreateView(generics.ListCreateAPIView):
     """
     API endpoint that allows list of categories with products to be viewed
     """
@@ -187,3 +188,9 @@ class CategoryDetailView(generics.RetrieveAPIView):
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+class ProductCreateView(generics.CreateAPIView):
+    """API endpoint for tests """
+    queryset = Product.objects.all()
+    serializer_class = CreateProductSerializer
