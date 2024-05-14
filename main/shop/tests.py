@@ -27,9 +27,11 @@ class ProductTestCase(APITestCase):
         response: HttpResponse = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Category.objects.count(), 1)
-        response: HttpResponse = self.client.get('/api/category/1', format='json')
+
+        response: HttpResponse = self.client.get('/api/category/3', format='json')
+        
         self.assertEqual(response.status_code, 200)
-        response: HttpResponse = self.client.get('/api/category/2', format='json')
+        response: HttpResponse = self.client.get('/api/category/4', format='json')
         self.assertEqual(response.status_code, 404)
 
     def test_create_check_product(self) -> None:

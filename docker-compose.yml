@@ -8,12 +8,12 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+    command: -p 5431
     ports:
-      - "${DB_PORT}:5432"
+      - "${DB_PORT}:5431"
   web:
     build: .
-    command: sh -c "cd main && python manage.py migrate && python manage.py runserver 0.0.0.0:8001"
-
+    command: sh -c "cd main && python manage.py migrate && python manage.py test &&  python manage.py runserver 0.0.0.0:8001"
     ports:
       - "8001:8001"
     env_file:

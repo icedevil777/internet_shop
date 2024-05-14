@@ -24,3 +24,9 @@ POST /order— создание заказа. Заказ должен сохра
     • MySql / PostgreSql
     • PyUnit
     • Приветствуется использование других библиотек
+
+### Запуск преокта
+
+```bash
+sudo docker-compose up --build
+```
