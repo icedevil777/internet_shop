@@ -2,8 +2,8 @@ version: '3.8'
 services:
   db:
     image: postgres:13.0-alpine
-    volumes:
-      - .data:/var/lib/postgresql/data
+    # volumes:
+    #   - .data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -13,7 +13,7 @@ services:
       - "${DB_PORT}:5431"
   web:
     build: .
-    command: sh -c "cd main && python manage.py migrate && python manage.py test &&  python manage.py runserver 0.0.0.0:8001"
+    command: sh -c "cd main && python manage.py migrate && python manage.py loaddata fixtures/alldata.json && python manage.py test &&  python manage.py runserver 0.0.0.0:8001"
     ports:
       - "8001:8001"
     env_file:
