@@ -24,7 +24,7 @@ from .serializers import (
 
 class OrderDetailView(generics.RetrieveAPIView):
     """
-    API endpoint that allows category to be viewed
+    API endpoint that allows one order to be viewed
     """
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -32,7 +32,7 @@ class OrderDetailView(generics.RetrieveAPIView):
 
 class OrderCreateView(APIView):
     """
-    API endpoint for delete and update products in cart
+    API endpoint for create orders 
     """
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
@@ -44,13 +44,17 @@ class OrderCreateView(APIView):
         if serializer.is_valid():
             order = serializer.save()
             # bulk_create
+            bulk_list = list()
             for item in cart:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item['product'],
-                    price=item['price'],
-                    quantity=item['quantity']
+                bulk_list.append(
+                    OrderItem(
+                        order=order,
+                        product=item['product'],
+                        price=item['price'],
+                        quantity=item['quantity']
+                    )
                 )
+            OrderItem.objects.bulk_create(bulk_list)
             cart.clear()
             return Response({"products_in_order": items, "order": serializer.validated_data}, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -123,7 +127,8 @@ class СartView(APIView):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             cart = Cart(request)
-            product: Product = get_object_or_404(Product, id=request.data['id'])
+            product: Product = get_object_or_404(
+                Product, id=request.data['id'])
             cart.add(
                 product=product,
                 quantity=serializer.data['quantity'],
@@ -155,9 +160,11 @@ class ProductListView(generics.ListAPIView):
         """POST /products"""
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            category: Category = Category.objects.get(name=serializer.data["category"])
+            category: Category = Category.objects.get(
+                name=serializer.data["category"])
             products = Product.objects.filter(category=category.id)
-            serializer = ProductSerializer(products, many=True, context={'request': request})
+            serializer = ProductSerializer(
+                products, many=True, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
 
