@@ -43,7 +43,6 @@ class OrderCreateView(APIView):
         serializer = OrderSerializer(data=request.data)
         if serializer.is_valid():
             order = serializer.save()
-            # bulk_create
             bulk_list = list()
             for item in cart:
                 bulk_list.append(
