@@ -56,6 +56,12 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 class ProductPostSerializer(serializers.Serializer):
     """Serializer for  Product if you want use POST method """
-    categories = Category.objects.all()
+
+    try:
+        categories = Category.objects.all()
+        choices = [cat.name for cat in categories]
+    except:
+        choices = []
+
     id = serializers.IntegerField(read_only=True)
-    category = serializers.ChoiceField(choices=[cat.name for cat in categories])
+    category = serializers.ChoiceField(choices=choices)

@@ -107,7 +107,7 @@ class СartDetailView(APIView):
 
 class СartView(APIView):
     """
-    API endpoint for add and list products in cart
+    API endpoint for add and list products in cart and clear all cart
     """
     serializer_class = СartSerializer
     permission_classes = [IsAuthenticated]
