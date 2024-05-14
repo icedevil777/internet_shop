@@ -30,3 +30,6 @@ POST /order— создание заказа. Заказ должен сохра
 ```bash
 sudo docker-compose up --build
 ```
+
+
+#### Джанго админка: admin admin admin@admin.ru

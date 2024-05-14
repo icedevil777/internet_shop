@@ -120,16 +120,17 @@ class СartView(APIView):
 
     def post(self, request) -> Response:
         """Add and Update on list page"""
-        cart = Cart(request)
-        product: Product = get_object_or_404(Product, id=request.data['id'])
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
+            cart = Cart(request)
+            product: Product = get_object_or_404(Product, id=request.data['id'])
             cart.add(
                 product=product,
                 quantity=serializer.data['quantity'],
                 override_quantity=serializer.data['override']
             )
-            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+            price = cart.get_total_price()
+            return Response({"price": price, "products": cart.cart}, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request) -> Response:
@@ -183,14 +184,12 @@ class CategoryListCreateView(generics.ListCreateAPIView):
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
-    """
-    API endpoint that allows category to be viewed
-    """
+    """API endpoint that allows category to be viewed"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
 
 class ProductCreateView(generics.CreateAPIView):
-    """API endpoint for tests """
+    """API endpoint for create products """
     queryset = Product.objects.all()
     serializer_class = CreateProductSerializer
